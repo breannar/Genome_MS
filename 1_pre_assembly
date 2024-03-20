@@ -1,0 +1,81 @@
+#########################
+#processing Nanopore data 
+#########################
+
+######################
+#porechop slurm script
+######################
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=250g
+#SBATCH --time=3-00:00
+
+source /home/breannar/projects/def-quarmby/breannar/virtual_envs/porechop/bin/activate
+
+porechop -i /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/PAG56671_pass_concat.fastq -o /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/porechop/porechop_PAG56671.fastq --discard_middle --threads 20
+
+gzip -c /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/porechop/porechop_PAG56671.fastq > porechop_PAG56671.fastq.gz
+
+######################
+#nanofilt slurm script
+######################
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=250g
+#SBATCH --time=3-00:00
+
+source /home/breannar/projects/def-quarmby/breannar/virtual_envs/nanofilt/bin/activate
+
+gunzip -c /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/porechop_PAG56671.fastq.gz | NanoFilt -q 10 -l 5000 | gzip > /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz
+
+#########################
+#processing Illumina data
+#########################
+
+########################
+#trim reads slurm script
+########################
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=187g
+#SBATCH --time=1-00:00
+
+module load bbmap/38.86
+
+bbduk.sh in1=F58139_1_150bp_4_lanes.merge_chastity_passed.fastq.gz in2=F58139_2_150bp_4_lanes.merge_chastity_passed.fastq.gz out1=trim_batch_F58139_1.fq.gz out2=trim_batch_F58139_2.fq.gz ref=/home/breannar/projects/def-quarmby/breannar/programs/bbmap/bbmap/resources/adapters.fa ktrim=r k=23 mink=11 hdist=1 tpe tbo minlen=50 qtrim=rl trimq=30 maq=33 threads=40
+
+#################################
+#remove contaminants slurm script
+#################################
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=187g
+#SBATCH --time=1-00:00
+
+module load bbmap/38.86
+bbduk.sh ref=/home/breannar/projects/def-quarmby/breannar/illumina_WGS/contaminants/refseq/ref_bac_fun.fna.gz threads=24 ordered=t k=31 in=/home/breannar/projects/def-quarmby/breannar/illumina_WGS/trim_batch_F58139_1.fq.gz in2=/home/breannar/projects/def-quarmby/breannar/illumina_WGS/trim_batch_F58139_2.fq.gz out=/home/breannar/projects/def-quarmby/breannar/illumina_WGS/R1_no_contam.fq.gz out2=/home/breannar/projects/def-quarmby/breannar/illumina_WGS/R2_no_contam.fq.gz outm=/home/breannar/projects/def-quarmby/breannar/illumina_WGS/contam_R1.bad.fq.gz outm2=/home/breannar/projects/def-quarmby/breannar/illumina_WGS/contam_R2.bad.fq.gz
+
