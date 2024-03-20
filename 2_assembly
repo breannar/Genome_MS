@@ -1,0 +1,17 @@
+###########################
+#Flye assembly slurm script
+###########################
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=250g
+#SBATCH --time=3-00:00
+
+source /home/breannar/projects/def-quarmby/breannar/virtual_envs/flye/bin/activate
+
+flye --nano-raw /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz --out-dir flye --threads 20
