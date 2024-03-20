@@ -1,7 +1,8 @@
-###Note: same process repeated for GenomeA and GenomeB separated in the last step 3_blobtools_taxonomic_partitioning+GC_separation 
-################################
-#racon polishing 4x slurm script
-################################
+###Note: same process repeated for GenomeA and GenomeB (separated in the last step 3_blobtools_taxonomic_partitioning+GC_separation)
+
+########################################
+#racon polishing 4x slurm script genomeA
+########################################
 #!/bin/bash
 
 #SBATCH --account=def-quarmby
@@ -13,36 +14,48 @@
 #SBATCH --mem=250g
 #SBATCH --time=5-00:00
 
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=187g
+#SBATCH --time=3-00:00
+
 module load StdEnv/2020 racon/1.4.3
 module load bwa/0.7.17
 
-bwa index /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/assembly.fasta
+bwa index genomeA.fasta 
 
-bwa mem -t 14 -x ont2d /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/assembly.fasta /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz > /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/mapping.sam
+bwa mem -t 32 -x ont2d genomeA.fasta  /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz > mapping.sam
 
-racon -m 8 -x -6 -g -8 -w 500 -t 14 /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/mapping.sam /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/assembly.fasta > /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/racon.fasta
+racon -m 8 -x -6 -g -8 -w 500 -t 32 /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz mapping.sam genomeA.fasta > racon.fasta
 
-bwa index /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/racon.fasta
+bwa index racon.fasta 
 
-bwa mem -t 14 -x ont2d /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/racon.fasta /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz > /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/mapping2.sam
+bwa mem -t 32 -x ont2d racon.fasta  /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz > mapping2.sam
 
-racon -m 8 -x -6 -g -8 -w 500 -t 14 /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/mapping2.sam /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/racon.fasta > /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/racon2.fasta
+racon -m 8 -x -6 -g -8 -w 500 -t 32 /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz mapping2.sam racon.fasta > racon2.fasta
 
-bwa index /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/racon2.fasta
+bwa index racon2.fasta
 
-bwa mem -t 14 -x ont2d /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/racon2.fasta /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz > /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/mapping3.sam
+bwa mem -t 32 -x ont2d racon2.fasta /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz > mapping3.sam
 
-racon -m 8 -x -6 -g -8 -w 500 -t 14 /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/mapping3.sam /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/racon2.fasta > /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/racon3.fasta
+racon -m 8 -x -6 -g -8 -w 500 -t 32 /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz mapping3.sam racon2.fasta > racon3.fasta
 
-bwa index /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/racon3.fasta
+bwa index racon3.fasta
 
-bwa mem -t 14 -x ont2d /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/racon3.fasta /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz > /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/mapping4.sam
+bwa mem -t 32 -x ont2d racon3.fasta /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz > mapping4.sam
 
-racon -m 8 -x -6 -g -8 -w 500 -t 14 /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/mapping4.sam /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/racon3.fasta > /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/racon_4x.fasta
+racon -m 8 -x -6 -g -8 -w 500 -t 32 /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz mapping4.sam racon3.fasta > racon4.fasta
 
-##########################################
-#pilon hybrid polishing with illumina data
-##########################################
+
+######################################################
+#pilon hybrid polishing with illumina data for genomeA
+######################################################
 #!/bin/bash
 
 #SBATCH --account=def-quarmby
@@ -54,7 +67,101 @@ racon -m 8 -x -6 -g -8 -w 500 -t 14 /home/breannar/projects/def-quarmby/breannar
 #SBATCH --mem=250g
 #SBATCH --time=1-00:00
 
+#prep reads for pilon
+module load bwa/0.7.17
+module load pilon/1.22
+module load samtools/1.9
+
+bwa index racon4.fasta
+mkdir illumina_mapping
+bwa mem -t 14 racon4.fasta  /home/breannar/projects/def-quarmby/breannar/illumina_WGS/R1_no_contam.fq.gz /home/breannar/projects/def-quarmby/breannar/illumina_WGS/R2_no_contam.fq.gz > aln_pe2.sam
+samtools view -Sb aln_pe2.sam | samtools sort - -@14 -o illumina_mapping/mapping.sorted.bam
+samtools index illumina_mapping/mapping.sorted.bam
+
 module load java/13.0.2
 module load  pilon/1.23
 
-java -Xmx160G -jar $EBROOTPILON/pilon.jar --genome /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/racon/genome/genome_racon4x.fasta.gz --fix all --changes --frags aln_complete_pe.sorted.bam --threads 14 --output pilon1 --outdir pilon
+java -Xmx160G -jar $EBROOTPILON/pilon.jar --genome racon4.fasta --fix all --changes --frags illumina_mapping/mapping.sorted.bam --threads 14 --output Sanguina_aurantia --outdir out_FINAL
+
+########################################
+#racon polishing 4x slurm script genomeB
+########################################
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=250g
+#SBATCH --time=5-00:00
+
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=187g
+#SBATCH --time=3-00:00
+
+module load StdEnv/2020 racon/1.4.3
+module load bwa/0.7.17
+
+bwa index genomeB.fasta 
+
+bwa mem -t 32 -x ont2d genomeB.fasta  /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz > mapping.sam
+
+racon -m 8 -x -6 -g -8 -w 500 -t 32 /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz mapping.sam genomeB.fasta > racon.fasta
+
+bwa index racon.fasta 
+
+bwa mem -t 32 -x ont2d racon.fasta  /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz > mapping2.sam
+
+racon -m 8 -x -6 -g -8 -w 500 -t 32 /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz mapping2.sam racon.fasta > racon2.fasta
+
+bwa index racon2.fasta
+
+bwa mem -t 32 -x ont2d racon2.fasta /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz > mapping3.sam
+
+racon -m 8 -x -6 -g -8 -w 500 -t 32 /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz mapping3.sam racon2.fasta > racon3.fasta
+
+bwa index racon3.fasta
+
+bwa mem -t 32 -x ont2d racon3.fasta /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz > mapping4.sam
+
+racon -m 8 -x -6 -g -8 -w 500 -t 32 /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz mapping4.sam racon3.fasta > racon4.fasta
+
+######################################################
+#pilon hybrid polishing with illumina data for genomeB
+######################################################
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=250g
+#SBATCH --time=1-00:00
+
+#prep reads for pilon
+module load bwa/0.7.17
+module load pilon/1.22
+module load samtools/1.9
+
+bwa index racon4.fasta
+mkdir illumina_mapping
+bwa mem -t 14 racon4.fasta  /home/breannar/projects/def-quarmby/breannar/illumina_WGS/R1_no_contam.fq.gz /home/breannar/projects/def-quarmby/breannar/illumina_WGS/R2_no_contam.fq.gz > aln_pe2.sam
+samtools view -Sb aln_pe2.sam | samtools sort - -@14 -o illumina_mapping/mapping.sorted.bam
+samtools index illumina_mapping/mapping.sorted.bam
+
+module load java/13.0.2
+module load  pilon/1.23
+
+java -Xmx160G -jar $EBROOTPILON/pilon.jar --genome racon4.fasta --fix all --changes --frags illumina_mapping/mapping.sorted.bam --threads 14 --output Sanguina_aurantia --outdir out_ALTERNATE
+
