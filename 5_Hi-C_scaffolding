@@ -1,0 +1,84 @@
+###Note: Scaffolding process completed for both GenomeA and GenomeB 
+
+##############
+Steps outlined are following 
+#reads1
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=187g
+#SBATCH --time=1-00:00
+
+module load nixpkgs/16.09  intel/2018.3
+module load bwa/0.7.17
+module load samtools/1.9
+module load picard/2.1.1
+
+bwa mem -t 12 /home/breannar/projects/def-quarmby/breannar/hiC/arima_pipeline/pilon1 /home/breannar/projects/def-quarmby/breannar/hiC/F78982_1_150bp_4_lanes.merge_chastity_passed.fastq.gz | samtools view -@ 12 -Sb - > reads11.bam
+
+samtools view -h reads11.bam | perl /home/breannar/projects/def-quarmby/breannar/hiC/arima_pipeline/filter_five_end.pl | samtools view -Sb - > filt_reads11.bam
+
+#reads2
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=187g
+#SBATCH --time=1-00:00
+
+module load nixpkgs/16.09  intel/2018.3
+module load bwa/0.7.17
+module load samtools/1.9
+module load picard/2.1.1
+
+bwa mem -t 12 /home/breannar/projects/def-quarmby/breannar/hiC/arima_pipeline/pilon1 /home/breannar/projects/def-quarmby/breannar/hiC/F78982_2_150bp_4_lanes.merge_chastity_passed.fastq.gz | samtools view -@ 12 -Sb - > reads22.bam
+samtools view -h reads22.bam | perl /home/breannar/projects/def-quarmby/breannar/hiC/arima_pipeline/filter_five_end.pl | samtools view -Sb - > filt_reads22.bam
+
+#merge 
+perl two_read_bam_combiner.pl reads1/filt_reads11.bam reads2/filt_reads22.bam samtools -q 10 | samtools view -bS -t pilon1.fasta.fai - | samtools sort -@ 12 -o hiC_illumina_dec09.bam -
+
+#mark duplicates 
+java -Xmx30G -XX:-UseGCOverheadLimit -Djava.io.tmpdir=temp/ -jar $EBROOTPICARD/picard.jar MarkDuplicates INPUT=read_group_hiC_illumina_dec13.bam OUTPUT=rep_dir/test_rep_label_hiC_illumina_dec13.bam METRICS_FILE=rep_dir/metrics.rep_label.txt TMP_dir=tmp_dir ASSUME_SORTED=TRUE VALIDATION_STRINGENCY=LENIENT REMOVE_DUPLICATES=TRUE 
+
+#format for SALSA
+samtools index rep_dir/rep_label.BAM
+perl path/get_stats.pl  rep_dir/rep_label.bam > rep_dir/rep_label.bam.stats
+
+#make bed
+module load bedtools 
+bamToBed -i rep_dir/test_rep_label_hiC_illumina_dec13.bam > rep_dir/test_rep_label_hiC_illumina_dec13.bed
+sort -k 4 rep_dir/test_rep_label_hiC_illumina_dec13.bed > tmp && mv tmp final_hiC_illumina_dec14.bed 
+
+#salsa
+python /home/breannar/projects/def-quarmby/breannar/programs/salsa/SALSA/SALSA/SALSA/run_pipeline.py -a pilon1.fasta -l pilon1.fasta.fai -b final_hiC_illumina_dec14.bed -o pilon_og_scaffolds -e GATC,GANTC -m yes
+
+#making a hic file to upload in juicer for visualization 
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=187g
+#SBATCH --time=1-00:00
+
+module load nixpkgs/16.09  intel/2018.3
+module load samtools/1.9
+module load  StdEnv/2020
+module load  perl/5.30.2
+module load java/14.0.2
+module load samtools/1.12
+
+/home/breannar/projects/def-quarmby/breannar/programs/salsa/SALSA/SALSA/SALSA/convert.sh slurm_pilon_og_scaffolds
+
