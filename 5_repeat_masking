@@ -1,0 +1,43 @@
+###############################
+script_RepeatModeler_high_gc.sh 
+###############################
+
+#!/bin/bash
+
+#SBATCH --job-name=metaflye_sanguina
+##SBATCH --mail-user=pierre.guenzi.tiberi@gmail.com
+#SBATCH --mail-type=FAIL,END
+#SBATCH --output metaflye_sanguina.out
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=60gb
+#SBATCH --time=24:00:00
+#SBATCH --account=sanguina_alp
+
+module load repeatmodeler/2.0.3
+RepeatModeler -database S_aurantia_main -pa 20  -LTRStruct
+module load repeatmasker/4.1.2.p1
+RepeatMasker -xsmall -lib ./S_aurantia_main-families.fa scaffolds_FINAL.fasta
+
+
+##############################
+script_RepeatModeler_low_gc.sh 
+##############################
+#!/bin/bash
+
+#SBATCH --job-name=metaflye_sanguina
+##SBATCH --mail-user=pierre.guenzi.tiberi@gmail.com
+#SBATCH --mail-type=FAIL,END
+#SBATCH --output metaflye_sanguina.out
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=60gb
+#SBATCH --time=24:00:00
+#SBATCH --account=sanguina_alp
+
+module load repeatmodeler/2.0.3
+RepeatModeler -database S_aurantia_alternate -pa 20  -LTRStruct 
+module load repeatmasker/4.1.2.p1
+RepeatMasker -xsmall -lib ./S_aurantia_alternate-families.fa scaffolds_FINAL.fasta
