@@ -1,0 +1,37 @@
+########################
+script_braker_high_gc.sh
+########################
+#!/bin/bash
+
+#SBATCH --job-name=metaflye_sanguina
+##SBATCH --mail-user=pierre.guenzi.tiberi@gmail.com
+#SBATCH --mail-type=FAIL,END
+#SBATCH --output metaflye_sanguina.out
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=15
+#SBATCH --mem=60gb
+#SBATCH --time=24:00:00
+#SBATCH --account=sanguina_alp
+
+module load braker3/3.0.3
+singularity exec ../../../../braker3.sif braker.pl --useexisting --genome ./scaffolds_FINAL.fasta.masked --bam high_coverageAligned.out.bam --species=Sanguina_aurantia_main_2 --gff3 --threads 15
+
+########################
+script_braker_low_gc.sh
+########################
+#!/bin/bash
+
+#SBATCH --job-name=metaflye_sanguina
+##SBATCH --mail-user=pierre.guenzi.tiberi@gmail.com
+#SBATCH --mail-type=FAIL,END
+#SBATCH --output metaflye_sanguina.out
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=15
+#SBATCH --mem=60gb
+#SBATCH --time=24:00:00
+#SBATCH --account=sanguina_alp
+
+module load braker3/3.0.3
+singularity exec ../../../../braker3.sif braker.pl --useexisting --genome ./scaffolds_FINAL.fasta.masked --bam low_coverageAligned.out.bam --species=Sanguina_aurantia_alternate_2 --gff3 --threads 15
