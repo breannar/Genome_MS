@@ -1,0 +1,59 @@
+###################
+#prepare blast file
+###################
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=250g
+#SBATCH --time=3-00:00
+
+
+module load  StdEnv/2020  gcc/9.3.0
+module load blast+
+module load python
+
+blastn -query /home/breannar/assembly.fasta -db /home/breannar/projects/def-quarmby/breannar/install/NCBI_nt/nt -outfmt '6 qseqid staxids bitscore std' -max_target_seqs 1 -max_hsps 1 -task megablast -num_threads 32 -evalue 1e-25 -out blast_blob.out
+
+#####################
+#prepare mapping file
+#####################
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=187g
+#SBATCH --time=1-00:00
+
+module load bwa
+
+bwa mem /home/breannar/assembly.fasta /home/breannar/projects/def-quarmby/breannar/illumina_WGS/R1_no_contam.fq.gz /home/breannar/projects/def-quarmby/breannar/illumina_WGS/R2_no_contam.fq.gz > aln-pe.sam
+
+module load samtools 
+
+samtools sort aln-pe.sam aln_sort.bam
+
+###################
+#blobtools commands
+###################
+./blobtools create \
+ -i assembly.fasta \
+ -b aln_sort.bam \
+ -t blast_blob.out \
+ -o blobplot
+
+ ./blobtools view \
+ -i blobplot.blobDB.json \
+ -o blob_out/
+
+ ./blobtools plot \
+ -i blobplot.blobDB.json \
+ -o blob_plot/
