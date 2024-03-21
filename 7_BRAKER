@@ -19,6 +19,9 @@ STAR --genomeDir genome/ \
 --readFilesIn read1.fq,read2.fq \
 --outSAMtype BAM SortedByCoordinate \ 
 
+module load samtools/1.17
+samtools -Sb in.sam > out.bam
+
 ########################
 #script_braker_high_gc.sh
 ########################
