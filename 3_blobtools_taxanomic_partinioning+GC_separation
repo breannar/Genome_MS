@@ -1,3 +1,5 @@
+##Blobplot was used following the commands below with both the total initial genome assembly and again after removing contaminant contigs (identified based on the first round of blobtools)
+
 ###################
 #prepare blast file
 ###################
