@@ -64,5 +64,9 @@ samtools sort aln-pe.sam aln_sort.bam
 #read coverage histogram
 ########################
 
+module load bwa/0.7.17
 
-purge_haplotigs  readhist  aligned.bam
+bwa index assembly.fasta
+bwa mem -t 14 assembly.fasta  /home/breannar/projects/def-quarmby/breannar/illumina_WGS/R1_no_contam.fq.gz /home/breannar/projects/def-quarmby/breannar/illumina_WGS/R2_no_contam.fq.gz > aln.sam
+samtools view -Sb aln.sam | samtools sort - -@14 -o mapping.sorted.bam
+purge_haplotigs  readhist  mapping.sorted.bam
