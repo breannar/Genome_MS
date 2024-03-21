@@ -1,14 +1,64 @@
 #####################
 Interproscan Genome A
 #####################
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=187g
+#SBATCH --time=1-00:00
+
+module load StdEnv/2020
+module load interproscan/5.64-96.0
+module load python 
+module load perl 
+module load java
+
+interproscan.sh -i /home/breannar/scratch/BRAKER_PGT/braker_second_round_prot_main_genome/braker_main_wprot_extra.fasta  -appl Pfam -b /home/breannar/scratch/BRAKER_PGT/braker_second_round_prot_main_genome/interpro/output -goterms
 
 #################
 tRNAscan Genome A
 #################
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=187g
+#SBATCH --time=2-00:00
+
+module load StdEnv/2020  gcc/9.3.0
+module load  trnascan-se/2.0.12
+
+tRNAscan-SE masked_highGC.fasta --output output.output --gff gff.gff --fasta fasta.fasta --stats stats.txt
 
 ##################
 Swissprot Genome A
 ##################
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=187g
+#SBATCH --time=2-00:00
+
+module load  StdEnv/2020  gcc/9.3.0
+module load blast+
+module load python
+
+blastp -db /home/breannar/scratch/swiss_complete/uniprot_sprot -query /home/breannar/scratch/BRAKER_PGT/braker_second_round_prot_main_genome/braker_main_with_prot.aa -evalue 1e-5 -out swiss_output6_main -outfmt 6 -num_threads 20
+python /home/breannar/scratch/BRAKER_PGT/braker_second_round_prot_main_genome/blastxml_to_tabular.py -c qseqid,qlen,salltitles,sseqid,slen,bitscore,qframe,pident,evalue,qstart,qend,sstart,send,length swiss_annot_main.xml > swiss_annot_main.tsv
 
 ############################################################################################
 HSDFinder steps following Protocol for HSDFinder at DOI: 10.1016/j.xpro.2021.100619 Genome A
@@ -29,6 +79,25 @@ tRNAscan Genome B
 ##################
 Swissprot Genome B
 ##################
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=187g
+#SBATCH --time=3-00:00
+
+module load  StdEnv/2020  gcc/9.3.0
+module load blast+
+module load python
+
+blastp -db /home/breannar/scratch/swiss_complete/uniprot_sprot -query /home/breannar/scratch/BRAKER_PGT/braker_second_round_prot_alt_genome/braker.aa -evalue 1e-5 -out swiss_annot_alt.xml -outfmt 5 -num_threads 20
+
+python /home/breannar/scratch/BRAKER_PGT/braker_second_round_prot_main_genome/blastxml_to_tabular.py -c qseqid,qlen,salltitles,sseqid,slen,bitscore,qframe,pident,evalue,qstart,qend,sstart,send,length swiss_annot_alt.xml > swiss_annot_alt.tsv
+
 
 ############################################################################################
 HSDFinder steps following Protocol for HSDFinder at DOI: 10.1016/j.xpro.2021.100619 Genome B
