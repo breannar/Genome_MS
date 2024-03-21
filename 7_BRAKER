@@ -20,7 +20,7 @@ STAR --genomeDir genome/ \
 --outSAMtype BAM SortedByCoordinate \ 
 
 module load samtools/1.17
-samtools -Sb in.sam > out.bam
+samtools view -Sb in.sam > out.bam
 
 ########################
 #script_braker_high_gc.sh
