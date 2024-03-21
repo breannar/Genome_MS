@@ -67,7 +67,7 @@ bamToBed -i rep_dir/test_rep_label_hiC_illumina.bam > rep_dir/test_rep_label_hiC
 sort -k 4 rep_dir/test_rep_label_hiC_illumina.bed > tmp && mv tmp final_hiC_illumina.bed 
 
 #salsa
-python /home/breannar/projects/def-quarmby/breannar/programs/salsa/SALSA/SALSA/SALSA/run_pipeline.py -a pilon.fasta -l pilon.fasta.fai -b final_hiC_illumina.bed -o pilon_og_scaffolds -e GATC,GANTC -m yes
+python /home/breannar/projects/def-quarmby/breannar/programs/salsa/SALSA/SALSA/SALSA/run_pipeline.py -a pilon.fasta -l pilon.fasta.fai -b final_hiC_illumina.bed -o pilon_og_scaffolds -e GATC,GANTC,CTNAG,TTAA  -m yes
 
 #making a hic file to upload in juicer for visualization 
 #!/bin/bash
@@ -155,7 +155,7 @@ bamToBed -i rep_dir/test_rep_label_hiC_illumina.bam > rep_dir/test_rep_label_hiC
 sort -k 4 rep_dir/test_rep_label_hiC_illumina.bed > tmp && mv tmp final_hiC_illumina.bed 
 
 #salsa
-python /home/breannar/projects/def-quarmby/breannar/programs/salsa/SALSA/SALSA/SALSA/run_pipeline.py -a pilon2.fasta -l pilon2.fasta.fai -b final_hiC_illumina.bed -o pilon2_hic -e GATC,GANTC -m yes
+python /home/breannar/projects/def-quarmby/breannar/programs/salsa/SALSA/SALSA/SALSA/run_pipeline.py -a pilon2.fasta -l pilon2.fasta.fai -b final_hiC_illumina.bed -o pilon2_hic -e GATC,GANTC, CTNAG,TTAA -m yes
 
 #making a hic file to upload in juicer for visualization 
 #!/bin/bash
@@ -177,3 +177,23 @@ module load java/14.0.2
 module load samtools/1.12
 
 /home/breannar/projects/def-quarmby/breannar/programs/salsa/SALSA/SALSA/SALSA/convert.sh pilon2_hic
+
+#################
+Generate dot plot
+#################
+
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=187g
+#SBATCH --time=1-00:00
+
+module load minimap2
+
+minimap2 -c scaffolds_FINAL.fasta /home/breannar/scratch/ALTERNATE_genome_Nov29/HiC_ALTERNATE/scaffolds_FINAL.fasta > alignment_both.paf
+
+./pafCoordsDotPlotly.R -i alignment_both.paf -o out -s -t -m 500 -q 500000 -k 7 -l
