@@ -79,3 +79,18 @@ bbduk.sh in1=F58139_1_150bp_4_lanes.merge_chastity_passed.fastq.gz in2=F58139_2_
 module load bbmap/38.86
 bbduk.sh ref=/home/breannar/projects/def-quarmby/breannar/illumina_WGS/contaminants/refseq/ref_bac_fun.fna.gz threads=24 ordered=t k=31 in=/home/breannar/projects/def-quarmby/breannar/illumina_WGS/trim_batch_F58139_1.fq.gz in2=/home/breannar/projects/def-quarmby/breannar/illumina_WGS/trim_batch_F58139_2.fq.gz out=/home/breannar/projects/def-quarmby/breannar/illumina_WGS/R1_no_contam.fq.gz out2=/home/breannar/projects/def-quarmby/breannar/illumina_WGS/R2_no_contam.fq.gz outm=/home/breannar/projects/def-quarmby/breannar/illumina_WGS/contam_R1.bad.fq.gz outm2=/home/breannar/projects/def-quarmby/breannar/illumina_WGS/contam_R2.bad.fq.gz
 
+##############
+Quality checks
+##############
+
+#FastQC 
+module load fastqc/0.11.9
+mkdir fastqcresult
+#fastqc inputfile -o outputdir -t 20
+fastqc PAG56671_pass_concat.fastq -o fastqcresult -t 20 
+
+#GenomeScope
+jellyfish count -C -m 21 -s 1000000000 -t 10 F_R_illumina.fq -o reads.jf
+jellyfish histo -t 10 reads.jf > reads.histo
+Rscript genomescope.R reads.histo 21 150 output
+
