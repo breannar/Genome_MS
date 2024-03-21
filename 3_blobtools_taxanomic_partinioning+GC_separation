@@ -59,3 +59,10 @@ samtools sort aln-pe.sam aln_sort.bam
  ./blobtools plot \
  -i blobplot.blobDB.json \
  -o blob_plot/
+
+########################
+#read coverage histogram
+########################
+
+
+purge_haplotigs  readhist  aligned.bam
