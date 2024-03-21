@@ -15,3 +15,29 @@
 source /home/breannar/projects/def-quarmby/breannar/virtual_envs/flye/bin/activate
 
 flye --nano-raw /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/nanofilt/nanofilt_PAG56671.fastq.gz --out-dir flye --threads 20
+
+#####################################
+#Quality checks used throughout steps
+#####################################
+
+#quast
+
+quast.py -t 14 -o /home/breannar/projects/def-quarmby/breannar/quast -R /home/breannar/projects/def-quarmby/breannar/nanopore_promethION/flye/reference/GCA_013389655.1_ASM1338965v1_genomic.fna.gz genome.fasta
+
+#busco 
+
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=187g
+#SBATCH --time=1-00:00
+
+module load  StdEnv/2020  gcc/9.3.0  openmpi/4.0.3
+module load busco/5.2.2
+
+busco -i genome.fasta -l chlorophyta_odb10 -o busco_out -m genome --augustus
