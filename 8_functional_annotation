@@ -203,3 +203,8 @@ makeblastdb -dbtype prot -in braker_alt.fasta -title "braker_alt"
 blastp -query braker_alt.fasta -db braker_alt -out BLASTP_alt.txt -evalue 1e-5 -outfmt 6
 HSDFinder.py -i BLASTP_alt.txt -p 90.0 -l 10 -f /home/breannar/scratch/BRAKER_PGT/braker_second_round_prot_alt_genome/interpro/output/output.tsv -t Pfam -o HSDoutput
 
+###################
+#BUSCO protein mode
+###################
+module load busco/5.4.6 
+busco -i annotated.cds -l chlorophyta_odb10 -o out -mode transcriptome --augustus 
