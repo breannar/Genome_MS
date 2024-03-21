@@ -79,9 +79,47 @@ makeblastdb -in braker_main.fasta -dbtype prot -title "braker_main"
 blastp -query braker_main.fasta -db braker_main -out BLASTP_main.txt -evalue 1e-5 -outfmt 6
 HSDFinder.py -i BLASTP_main.txt -p 90.0 -l 10 -f /home/breannar/scratch/BRAKER_PGT/braker_second_round_prot_main_genome/interpro/output/output.tsv -t Pfam -o HSDoutput
 
-#################
-OrthoMCL Genome A
-#################
+########
+OrthoMCL 
+########
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=187g
+#SBATCH --time=2-00:00
+
+
+module load StdEnv/2020  gcc/9.3.0
+module load mcl/14.137
+module load blast/2.2.26
+module load orthomcl/2.0.9
+module load mysql
+module load mariadb
+module load StdEnv/2020 bioperl/1.7.8
+
+perl orthomcl-pipeline/scripts/orthomcl-pipeline.pl -i annotations/ -o output1/ -m orthomcl.conf --nocomplian
+
+##orthomcl.conf
+# this config assumes a mysql database named 'orthomcl'.  adjust according
+# to your situation.
+dbVendor=mysql 
+dbConnectString=dbi:mysql:breannar_orthomcl:cedar-mysql-vm.int.cedar.computecanada.ca
+dbLogin=breannar
+dbPassword=uu1EqSIUffhF&0Gk
+dbname=breannar_orthomcl
+similarSequencesTable=SimilarSequences
+orthologTable=Ortholog
+inParalogTable=InParalog
+coOrthologTable=CoOrtholog
+interTaxonMatchView=InterTaxonMatch
+percentMatchCutoff=50
+evalueExponentCutoff=-3
+oracleIndexTblSpc=NONE
 
 #####################
 Interproscan Genome B
@@ -165,6 +203,3 @@ makeblastdb -dbtype prot -in braker_alt.fasta -title "braker_alt"
 blastp -query braker_alt.fasta -db braker_alt -out BLASTP_alt.txt -evalue 1e-5 -outfmt 6
 HSDFinder.py -i BLASTP_alt.txt -p 90.0 -l 10 -f /home/breannar/scratch/BRAKER_PGT/braker_second_round_prot_alt_genome/interpro/output/output.tsv -t Pfam -o HSDoutput
 
-#################
-OrthoMCL Genome B
-#################
