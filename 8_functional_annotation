@@ -104,6 +104,7 @@ module load perl
 module load java
 
 interproscan.sh -i /home/breannar/scratch/BRAKER_PGT/braker_second_round_prot_alt_genome/braker.aa  -appl Pfam -b /home/breannar/scratch/BRAKER_PGT/braker_second_round_prot_alt_genome/interpro/output -goterms
+
 #################
 tRNAscan Genome B
 #################
@@ -145,7 +146,6 @@ blastp -db /home/breannar/scratch/swiss_complete/uniprot_sprot -query /home/brea
 
 python /home/breannar/scratch/BRAKER_PGT/braker_second_round_prot_main_genome/blastxml_to_tabular.py -c qseqid,qlen,salltitles,sseqid,slen,bitscore,qframe,pident,evalue,qstart,qend,sstart,send,length swiss_annot_alt.xml > swiss_annot_alt.tsv
 
-
 ############################################################################################
 HSDFinder steps following Protocol for HSDFinder at DOI: 10.1016/j.xpro.2021.100619 Genome B
 ############################################################################################
@@ -163,8 +163,7 @@ HSDFinder steps following Protocol for HSDFinder at DOI: 10.1016/j.xpro.2021.100
 module load  StdEnv/2020 gcc/9.3.0 blast+/2.14.0
 makeblastdb -dbtype prot -in braker_alt.fasta -title "braker_alt"
 blastp -query braker_alt.fasta -db braker_alt -out BLASTP_alt.txt -evalue 1e-5 -outfmt 6
-HSDFinder.py -i BLASTP_alt.txt -p 90.0 -l 10 -f output.tsv -t Pfam -o HSDoutput
-
+HSDFinder.py -i BLASTP_alt.txt -p 90.0 -l 10 -f /home/breannar/scratch/BRAKER_PGT/braker_second_round_prot_alt_genome/interpro/output/output.tsv -t Pfam -o HSDoutput
 
 #################
 OrthoMCL Genome B
