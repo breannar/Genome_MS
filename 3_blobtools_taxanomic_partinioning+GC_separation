@@ -63,6 +63,7 @@ samtools sort aln-pe.sam aln_sort.bam
 ########################
 #read coverage histogram
 ########################
+#this was repeated for various assemblies
 
 module load bwa/0.7.17
 
