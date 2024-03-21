@@ -63,6 +63,22 @@ python /home/breannar/scratch/BRAKER_PGT/braker_second_round_prot_main_genome/bl
 ############################################################################################
 HSDFinder steps following Protocol for HSDFinder at DOI: 10.1016/j.xpro.2021.100619 Genome A
 ############################################################################################
+#!/bin/bash
+
+#SBATCH --account=def-quarmby
+#SBATCH --mail-user=breannar@sfu.ca
+#SBATCH --mail-type=ALL
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem=187g
+#SBATCH --time=1-00:00
+
+module load  StdEnv/2020 gcc/9.3.0 blast+/2.14.0
+makeblastdb -in braker_main.fasta -dbtype prot -title "braker_main"
+blastp -query braker_main.fasta -db braker_main -out BLASTP_main.txt -evalue 1e-5 -outfmt 6
+HSDFinder.py -i BLASTP_main.txt -p 90.0 -l 10 -f /home/breannar/scratch/BRAKER_PGT/braker_second_round_prot_main_genome/interpro/output/output.tsv -t Pfam -o HSDoutput
+
 
 #################
 OrthoMCL Genome A
