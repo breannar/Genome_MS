@@ -207,4 +207,4 @@ HSDFinder.py -i BLASTP_alt.txt -p 90.0 -l 10 -f /home/breannar/scratch/BRAKER_PG
 #BUSCO protein mode
 ###################
 module load busco/5.4.6 
-busco -i annotated.cds -l chlorophyta_odb10 -o out -mode transcriptome --augustus 
+busco -i annotated.cds -l chlorophyta_odb10 -o out --mode trans --augustus 
