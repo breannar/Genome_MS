@@ -40,4 +40,4 @@ quast.py -t 14 -o /home/breannar/projects/def-quarmby/breannar/quast -R /home/br
 module load  StdEnv/2020  gcc/9.3.0  openmpi/4.0.3
 module load busco/5.2.2
 
-busco -i genome.fasta -l chlorophyta_odb10 -o busco_out -m genome --augustus
+busco -i genome.fasta -l chlorophyta_odb10 -o busco_out -m geno --augustus
