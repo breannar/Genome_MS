@@ -9,15 +9,16 @@ STAR alignment
 ##############
 module load gcc/6.2.0 star/2.5.2b
 
-STAR --runThreadN 6 \
+STAR --runThreadN  20 \
 --runMode genomeGenerate \
 --genomeDir genome \
---genomeFastaFiles genome.fasta \
+--genomeFastaFiles scaffolds_FINAL.fasta \
 
 STAR --genomeDir genome/ \
---runThreadN 6 \
---readFilesIn read1.fq,read2.fq \
+--runThreadN 20 \
+--readFilesIn output_forward_paired.fq,output_reverse_paired.fq \
 --outSAMtype BAM SortedByCoordinate \ 
+--outFileNamePrefix high_coverage
 
 module load samtools/1.17
 samtools view -Sb in.sam > out.bam
