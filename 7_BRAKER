@@ -12,7 +12,7 @@ module load gcc/6.2.0 star/2.5.2b
 STAR --runThreadN  20 \
 --runMode genomeGenerate \
 --genomeDir genome \
---genomeFastaFiles scaffolds_FINAL.fasta \
+--genomeFastaFiles scaffolds_FINAL.fasta.masked \
 
 STAR --genomeDir genome/ \
 --runThreadN 20 \
