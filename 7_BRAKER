@@ -11,14 +11,26 @@ module load gcc/6.2.0 star/2.5.2b
 
 STAR --runThreadN  20 \
 --runMode genomeGenerate \
---genomeDir genome \
---genomeFastaFiles scaffolds_FINAL.fasta.masked \
+--genomeDir genome_main \
+--genomeFastaFiles scaffolds_FINAL.fasta_main.masked \
 
-STAR --genomeDir genome/ \
+STAR --runThreadN  20 \
+--runMode genomeGenerate \
+--genomeDir genome_alt \
+--genomeFastaFiles scaffolds_FINAL.fasta_alt.masked \
+
+
+STAR --genomeDir genome_main/ \
 --runThreadN 20 \
 --readFilesIn output_forward_paired.fq,output_reverse_paired.fq \
 --outSAMtype BAM SortedByCoordinate \ 
 --outFileNamePrefix high_coverage
+
+STAR --genomeDir genome_alt/ \
+--runThreadN 20 \
+--readFilesIn output_forward_paired.fq,output_reverse_paired.fq \
+--outSAMtype BAM SortedByCoordinate \ 
+--outFileNamePrefix low_coverage
 
 ########################
 #script_braker_high_gc.sh
@@ -37,7 +49,7 @@ STAR --genomeDir genome/ \
 #SBATCH --account=sanguina_alp
 
 module load braker3/3.0.3
-singularity exec ../../../../braker3.sif braker.pl --useexisting --genome ./scaffolds_FINAL.fasta.masked --bam high_coverageAligned.out.bam --species=Sanguina_aurantia_main_2 --gff3 --threads 15
+singularity exec ../../../../braker3.sif braker.pl --useexisting --genome ./scaffolds_FINAL.fasta_main.masked --bam high_coverageAligned.out.bam --species=Sanguina_aurantia_main --gff3 --threads 15
 
 ########################
 #script_braker_low_gc.sh
@@ -56,4 +68,4 @@ singularity exec ../../../../braker3.sif braker.pl --useexisting --genome ./scaf
 #SBATCH --account=sanguina_alp
 
 module load braker3/3.0.3
-singularity exec ../../../../braker3.sif braker.pl --useexisting --genome ./scaffolds_FINAL.fasta.masked --bam low_coverageAligned.out.bam --species=Sanguina_aurantia_alternate_2 --gff3 --threads 15
+singularity exec ../../../../braker3.sif braker.pl --useexisting --genome ./scaffolds_FINAL.fasta_alt.masked --bam low_coverageAligned.out.bam --species=Sanguina_aurantia_alternate --gff3 --threads 15
